@@ -1,0 +1,61 @@
+
+{% extends "common/base.html" %}
+{% load static %}
+{% load myfilters %}
+
+{% block main %}
+{% include "includes/nav.html"%}
+{% endblock %}
+
+{% block body %}
+<div class="form-wrapper">
+    <h2>Sign UP</h2>
+    <form action="{% url 'signup' %}" method="POST">
+        {%  csrf_token %}
+        
+        {{ form.non_field_errors }}
+        <div class="my-form-control">
+            {{ form.username.errors }}
+            {{ form.username}}
+            <label for="id_username">Username:</label>
+        </div>
+        <div class="my-form-control">
+            {{ form.email.errors }}
+            {{ form.email}}
+            <label for="id_email">Email:</label>
+        </div>
+        <div class="my-form-control">
+            {{ form.password1.errors }}
+            {{ form.password1}}
+            <label for="id_password1">Password</label>
+        </div>
+        <div class="my-form-control">
+            {{ form.password2.errors }}
+            {{ form.password2}}
+            <label for="id_password2">Confirm Password:</label>
+        </div>
+        <div class="remember-me">
+            <input type="checkbox" id="remember-me" name="remember_me">
+            <label for="remember-me">Remember me</label>
+        </div>
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    let inputs = document.querySelectorAll('input');
+    for (let input of inputs){
+        input.addEventListener("change", () => {
+            if (input.value != '' && input.type != "checkbox"){
+                input.nextElementSibling.style.display = "none";
+            }
+            else{
+                input.nextElementSibling.style.display = "block";
+            }
+        })
+    }
+</script>
+{% endblock %}
