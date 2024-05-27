@@ -7,6 +7,14 @@ name = "pypi"
 django = "*"
 python-decouple = "*"
 ipython = "*"
+pillow = "*"
+black = "*"
+psycopg2 = "*"
+django-debug-toolbar = "*"
+shortuuid = "*"
+razorpay = "*"
+wkhtmltopdf = "*"
+xhtml2pdf = "*"
 
 [dev-packages]
 
