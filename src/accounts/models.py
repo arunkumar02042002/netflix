@@ -58,6 +58,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         full_name = "%s %s" % (self.first_name, self.last_name)
         return full_name.strip()
+    
+    def is_premium_user(self):
+        try:
+            if self.plan and self.plan.expiry_date > timezone.now():
+                return True
+        except:
+            return False
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")

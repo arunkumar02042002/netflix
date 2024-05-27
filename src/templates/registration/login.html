@@ -3,11 +3,12 @@
 {% load static %}
 {% load myfilters %}
 
-{% block main %}
-{% include "includes/nav.html"%}
-{% endblock %}
-
 {% block body %}
+
+<div id="main-container">
+    {% include "includes/nav.html"%}
+</div>
+
 <div class="form-wrapper">
     <h2>Sign In</h2>
     <form action="{% url 'login' %}" method="POST">
@@ -31,7 +32,8 @@
         </div>
         <button type="submit">Login</button>
     </form>
-    <p>New on Netflix? <a href="{% url 'signup' %}">Sign Up</a></p>
+    <p>New on Movie Bazaar? <a href="{% url 'signup' %}">Sign Up</a></p>
+    <p>Forgot your password? <a href="{% url 'password_reset' %}">Reset Password</a></p>
 </div>
 {% endblock %}
 

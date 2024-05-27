@@ -1,0 +1,184 @@
+
+{% extends "common/base.html" %}
+{% load static %}
+{% load myfilters %}
+
+{% block css %}
+
+<style>
+    .card {
+        width: 100%;
+        background-color:black;
+        border: none;
+        cursor: pointer;
+        transition: all 0.5s;
+        color:white;
+    }
+    
+    .image img {
+        transition: all 0.5s
+    }
+    
+    .btn1:hover #profile-photo {
+        transform: scale(1.5)
+    }
+    
+    .btn1 {
+        height: 140px;
+        width: 140px;
+        border-radius: 50%
+    }
+    
+    .name {
+        font-size: 22px;
+        font-weight: bold
+    }
+    
+    .idd {
+        font-size: 14px;
+        font-weight: 600
+    }
+    
+    .idd1 {
+        font-size: 12px
+    }
+    
+    .number {
+        font-size: 22px;
+        font-weight: bold
+    }
+    
+    .follow {
+        font-size: 12px;
+        font-weight: 500;
+        color: #444444
+    }
+    
+    .btn26{
+        height: 40px;
+        width: 150px;
+        border: none;
+        background-color: red;
+        color: #black;
+        font-size: 15px;
+        text-decoration: none;
+        align-content: center;
+        text-align: center;
+    }
+    
+    .text span {
+        font-size: 13px;
+        color: #545454;
+        font-weight: 500
+    }
+    
+    .icons i {
+        font-size: 19px
+    }
+    
+    hr .new1 {
+        border: 1px solid
+    }
+    
+    .join {
+        font-size: 14px;
+        color: #a0a0a0;
+        font-weight: bold
+    }
+    
+    .date {
+        background-color: #ccc
+    }
+
+    .divider{
+        height: 50px;
+        margin-bottom: 10px;
+        width: 100%;
+        box-shadow: rgba(50, 50, 93, 1) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.5) 0px 18px 36px -18px inset;
+    }
+
+</style>
+
+{% endblock css %}
+
+{% block body %}
+
+{% include "includes/nav.html" %}
+
+<div class="container d-flex justify-content-center">
+    <div class="card p-4 shadow">
+        <div class=" image d-flex flex-column justify-content-center align-items-center">
+            <button class="btn1 btn-secondary">
+                <img src="{{user.profile.profile_img.url}}" height="100px" width="100px" style="border-radius:50%" id="profile-photo"/>
+            </button>
+            <span class="name mt-3">{{user.first_name}} {{user.last_name}}</span>
+            <div class="text mt-3">
+                <span>{{user.profile.bio}}</span>
+            </div>
+            <div class=" d-flex mt-3">
+                <a href="{% url 'profile-update' %}" class="btn26 btn-dark">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divider" style="place-content:center">
+    <h3 class="mt-1" style="text-align:center">Wishlist</h3>
+</div>
+
+<div class="d-flex justify-content-center flex-wrap gap-3 m-3" id="movie-layout" style="min-height: 30vh;">
+	
+</div>
+
+<div class="d-flex justify-content-center align-items-center my-2" id="show-more-posts"></div>
+
+{% include 'includes/footer.html' %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+
+    const HOST_URL = window.location.protocol + '//' + window.location.host + '/';
+    const movieLayout = document.getElementById('movie-layout');
+    const showMorePosts = document.getElementById('show-more-posts');
+
+    movieLayout.innerHtML = '<h1 style="color:white">Hi there</h1>';
+    function appendPost(value, index){
+        movieLayout.innerHTML += `<div class="card bg-dark" style="max-width: 25rem;">
+            <div class="paid-logo"><i class="fa-solid fa-dollar-sign"></i></div>
+            <div class="text-white bg-dark mb-3">
+                <img class="card-img-top" src="/media/${value.fields.image_card}" alt="${value.fields.title}" style="height:300px; width:100%;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">${value.fields.title}</h5>
+                        <p>${value.fields.ratings} <i class="fa fa-star"></i></p>
+                    </div>
+                </div>
+            </div>
+            <a href="${HOST_URL}/movies/${value.fields.slug}" class="btn btn-primary">Watch</a>
+        </div>`
+    }
+    
+    function loadMovies(page=1){
+        let url = HOST_URL + `api/v1/wishlist?page=${page}`;
+
+        fetch(url).then((response) => {
+            return response.json()
+        })
+        .then((response) => {
+            response.data.results.forEach(appendPost);
+            if(response.data.next!=""){
+                showMorePosts.innerHTML = `<button type="button" class="btn btn-primary" onClick="loadMovies(page=${response.data.next})">Load More</button>`
+              }
+              else{
+                showMorePosts.innerHTML = "";
+            }
+        });
+        
+    }
+
+    loadMovies();
+
+</script>
+{% endblock %}

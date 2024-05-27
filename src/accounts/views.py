@@ -1,20 +1,27 @@
-from django.http import HttpResponse
-from django.shortcuts import HttpResponse, redirect
-from django.views import View
-from django.views.generic.base import TemplateResponseMixin
-from django.contrib.sites.shortcuts import get_current_site
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
+
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.conf import settings
+
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.urls import reverse, reverse_lazy
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.sites.shortcuts import get_current_site
+
+from django.views import View
+from django.views.generic.base import TemplateResponseMixin
+from django.views.generic import TemplateView
 
 from .tokens import account_activation_token
-from .forms import UserCreationForm
+from .forms import UserCreationForm, UserProfileUpdateForm
 
 from accounts.models import Profile
 
@@ -26,6 +33,8 @@ class RegisterView(View, TemplateResponseMixin):
     template_name = "registration/signup.html"
 
     def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('home')
         return self.render_to_response({"form": self.form_class()})
 
     def post(self, request, *args, **kwargs):
@@ -73,6 +82,7 @@ class RegisterView(View, TemplateResponseMixin):
 
         return self.render_to_response({"form": self.form_class()})
 
+
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -84,7 +94,90 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         profile = Profile.objects.create(user=user)
-        messages.success(request, f"Glad you're here, {{request.user.username}}. Login to continue.")
+        messages.success(request, f"Glad you're here, {user.username}. Login to continue.")
         return redirect(reverse("login"))
     else:
-        return HttpResponse("Activation link is invalid or your account is already verified! Try to login")
+        messages.error(request, f"Activation link is invalid or your account is already verified! Login to continue.")
+        return redirect(reverse("login"))
+
+   
+class UserLoginView(auth_views.LoginView):
+    form_class = AuthenticationForm
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(data=request.POST)
+        
+        if form.is_valid():
+
+            auth_login(request, form.get_user())
+            remember_me = request.POST.get('remember_me')
+
+            if remember_me:
+                request.session.set_expiry(7 * 24 * 60 * 60)
+            messages.success(request, "You just hoped into the server!")
+            return redirect('home')
+        
+        else:
+            messages.error(request, "Login Failed. Please correct the errors")
+            return self.form_invalid(form)
+        
+
+class InternalServerErrorView(TemplateView):
+    template_name = '500.html'
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        response = self.render_to_response(context)
+        response.status_code = 500
+        return response
+
+
+class PageNotFoundView(TemplateView):
+    template_name = '404.html'
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        response = self.render_to_response(context)
+        response.status_code = 404
+        return response
+
+
+class UserProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'registration/user_profile.html'
+
+
+class UserProfileUpdateView(LoginRequiredMixin, TemplateResponseMixin, View):
+
+    template_name = 'registration/user_profile_update.html'
+    form_class = UserProfileUpdateForm
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        initial_data = {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'profile_img': user.profile.profile_img,
+            'bio': user.profile.bio,
+        }
+        return self.render_to_response({'form':self.form_class(initial=initial_data)})
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(data=request.POST, files=request.FILES, instance=request.user.profile)
+
+        if form.is_valid() is False:
+            messages.error(request, "Please correct the errors")
+            return self.render_to_response({'form':self.form_class})
+
+        cleaned_data = form.cleaned_data
+
+        # Update User
+        user = request.user
+        user.first_name = cleaned_data.pop('first_name')
+        user.last_name = cleaned_data.pop('last_name')
+        user.save()
+
+        # Update profile
+        profile = form.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect('profile')
