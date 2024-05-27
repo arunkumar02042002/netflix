@@ -1,179 +1,526 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
 }
 
 body {
-    background: #000;
+  background: #000;
+  color: #fff;
 }
 
-body::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0.5;
-    width: 100%;
-    height: 100%;
-    background: url("images/hero-img.jpg");
-    background-position: center;
+@keyframes show-toast {
+  0% {
+    bottom: -100%;
+  }
+  20% {
+    bottom: 100px;
+  }
+  80% {
+    bottom: 100px;
+  }
+  100% {
+    bottom: -100%;
+  }
+}
+
+.show-notification {
+  position: fixed;
+  bottom: 100%;
+  right: 20px;
+  animation-name: show-toast;
+  animation-duration: 8s;
+  z-index: 99;
+}
+
+#main-container::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0.5;
+  width: 100%;
+  height: 100%;
+  background: url("images/hero-img-3.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.paid-logo{
+  position: absolute;
+  width: 42px;
+  display: grid;
+  place-items: center;
+  background-color: yellow;
+  top: 10px;
+  right: 20px;
+  padding: 5px 5px;
+  border-radius: 5px;
+  color: black;
+}
+
+#search_btn{
+  background: #e50914;
+}
+
+#search_btn:hover{
+  background: #7f090c;
+}
+
+.movie-section{
+  height: 100%;
+  width: 100%;
+  padding: 40px 50px;
+}
+
+hr{
+  margin: 0 !important;
+  color: inherit;
+  background-color: currentColor;
+  border: 0;
+  opacity: .25;
+}
+
+.errorlist {
+  color: red;
+}
+
+.main-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  margin-bottom: 3rem;
+}
+
+.danger {
+  color: #000000;
+  background-color: #7f090c;
+  border-color: #7f090c;
 }
 
 nav {
-    position: fixed;
-    padding: 25px 60px;
-    z-index: 1;
+  position: absolute;
+  top: 0;
+  background: transparent !important;
+  padding: 30px 50px !important;
 }
 
-nav a img {
-    width: 167px;
+.header nav a img {
+  width: 167px;
+  height: 50px;
+  z-index: 99;
 }
 
 .form-wrapper {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    border-radius: 4px;
-    padding: 70px;
-    width: 450px;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, .75);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 4px;
+  padding: 30px;
+  width: 450px;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.75);
 }
 
 .form-wrapper h2 {
-    color: #fff;
-    font-size: 2rem;
+  color: #fff;
+  font-size: 2rem;
 }
 
 .form-wrapper form {
-    margin: 25px 0 65px;
+  margin: 25px 0 30px;
 }
 
-form .form-control {
-    height: 50px;
-    position: relative;
-    margin-bottom: 16px;
+form .my-form-control {
+  height: 50px;
+  position: relative;
+  margin-bottom: 16px;
 }
 
-.form-control input {
-    height: 100%;
-    width: 100%;
-    background: #333;
-    border: none;
-    outline: none;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 1rem;
-    padding: 0 20px;
+.my-form-control input {
+  height: 100%;
+  width: 100%;
+  background: #333;
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+  padding: 0 20px;
 }
 
-.form-control input:is(:focus, :valid) {
-    background: #444;
-    padding: 16px 20px 0;
+.my-form-control input:is(:focus) {
+  background: #444;
+  padding: 16px 20px 0;
 }
 
-.form-control label {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1rem;
-    pointer-events: none;
-    color: #8c8c8c;
-    transition: all 0.1s ease;
+.my-form-control label {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  pointer-events: none;
+  color: #8c8c8c;
+  transition: all 0.1s ease;
 }
 
-.form-control input:is(:focus, :valid)~label {
-    font-size: 0.75rem;
-    transform: translateY(-130%);
+.my-form-control input:is(:focus) ~ label {
+  font-size: 0.75rem;
+  transform: translateY(-130%);
 }
 
 form button {
-    width: 100%;
-    padding: 16px 0;
-    font-size: 1rem;
-    background: #e50914;
-    color: #fff;
-    font-weight: 500;
-    border-radius: 4px;
-    border: none;
-    outline: none;
-    margin: 25px 0 10px;
-    cursor: pointer;
-    transition: 0.1s ease;
+  width: 100%;
+  padding: 16px 0;
+  font-size: 1rem;
+  background: #e50914;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  margin: 25px 0 10px;
+  cursor: pointer;
+  transition: 0.1s ease;
 }
 
 form button:hover {
-    background: #c40812;
+  background: #c40812;
 }
 
 .form-wrapper a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .form-wrapper a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .form-wrapper :where(label, p, small, a) {
-    color: #b3b3b3;
+  color: #b3b3b3;
 }
 
 form .form-help {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 form .remember-me {
-    display: flex;
+  display: flex;
 }
 
 form .remember-me input {
-    margin-right: 5px;
-    accent-color: #b3b3b3;
+  margin-right: 5px;
+  accent-color: #b3b3b3;
 }
 
 form .form-help :where(label, a) {
-    font-size: 0.9rem;
+  font-size: 0.9rem;
 }
 
 .form-wrapper p a {
-    color: #fff;
+  color: #fff;
 }
 
 .form-wrapper small {
-    display: block;
-    margin-top: 15px;
-    color: #b3b3b3;
+  display: block;
+  margin-top: 15px;
+  color: #b3b3b3;
 }
 
 .form-wrapper small a {
-    color: #0071eb;
+  color: #0071eb;
 }
 
 @media (max-width: 740px) {
-    body::before {
-        display: none;
-    }
+  body::before {
+    display: none;
+  }
 
-    nav, .form-wrapper {
-        padding: 20px;
-    }
+  nav,
+  .form-wrapper {
+    padding: 20px;
+  }
 
-    nav a img {
-        width: 140px;
-    }
+  nav a img {
+    width: 140px;
+  }
 
-    .form-wrapper {
-        width: 100%;
-        top: 43%;
-    }
+  .form-wrapper {
+    width: 100%;
+    top: 43%;
+  }
 
-    .form-wrapper form {
-        margin: 25px 0 40px;
+  .form-wrapper form {
+    margin: 25px 0 40px;
+  }
+}
+
+.movie_card {
+  position: relative;
+  display: block;
+  width: 800px;
+  height: 350px;
+  margin: 80px auto;
+  overflow: hidden;
+  border-radius: 10px;
+  transition: all 0.4s;
+  box-shadow: 0px 0px 120px -25px rgba(0, 0, 0, 0.5);
+  /* &:hover{
+      transform: scale(1.02);
+      box-shadow: 0px 0px 80px -25px rgba(0,0,0, 0.5);
+      transition: all 0.4s;
+    } */
+  .info_section {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-blend-mode: multiply;
+    z-index: 2;
+    border-radius: 10px;
+    .movie_header {
+      position: relative;
+      padding: 25px;
+      height: 40%;
+      h1 {
+        color: black;
+        font-weight: 400;
+      }
+      h4 {
+        color: #555;
+        font-weight: 400;
+      }
+      .minutes {
+        display: inline-block;
+        margin-top: 15px;
+        color: #555;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      .type {
+        display: inline-block;
+        color: #959595;
+        margin-left: 10px;
+      }
+      .locandina {
+        position: relative;
+        float: left;
+        margin-right: 20px;
+        height: 120px;
+        box-shadow: 0 0 20px -10px rgba(0, 0, 0, 0.5);
+      }
     }
+    .movie_desc {
+      padding: 25px;
+      height: 50%;
+      .text {
+        color: #545454;
+      }
+    }
+    .movie_social {
+      height: 10%;
+      padding-left: 15px;
+      padding-bottom: 20px;
+      ul {
+        list-style: none;
+        padding: 0;
+        li {
+          display: inline-block;
+          color: rgba(0, 0, 0, 0.3);
+          transition: color 0.3s;
+          transition-delay: 0.15s;
+          margin: 0 10px;
+          &:hover {
+            transition: color 0.3s;
+            color: rgba(0, 0, 0, 0.7);
+          }
+          i {
+            font-size: 19px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+  .blur_back {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    height: 100%;
+    right: 0;
+    background-size: cover;
+    border-radius: 11px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .movie_header {
+    width: 65%;
+  }
+
+  .movie_desc {
+    width: 50%;
+  }
+
+  .info_section {
+    background: linear-gradient(to right, #e5e6e6 50%, transparent 100%);
+  }
+
+  .blur_back {
+    width: 80%;
+    background-position: -100% 10% !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .movie_card {
+    width: 95%;
+    margin: 70px auto;
+    min-height: 350px;
+    height: auto;
+  }
+
+  .blur_back {
+    width: 100%;
+    background-position: 50% 50% !important;
+  }
+
+  .movie_header {
+    width: 100%;
+    margin-top: 85px;
+  }
+
+  .movie_desc {
+    width: 100%;
+  }
+
+  .info_section {
+    background: linear-gradient(to top, #e5e6e6 50%, transparent 100%);
+    display: inline-grid;
+  }
+}
+
+.tomb_back {
+  background: url("https://fsmedia.imgix.net/cd/c9/5e/ba/4817/4d9a/93f0/c776ec32ecbc/lara-crofts-neck-looks-unnatural-in-the-new-poster-for-tomb-raider.png");
+}
+
+.ave_back {
+  background: url("https://www.gannett-cdn.com/-mm-/c03fd140debe8ad4c05cf81a5cad7ad61a12ce52/c=0-1580-2985-3266&r=x803&c=1600x800/local/-/media/2017/06/09/USATODAY/USATODAY/636326272873599176-Black-Panther-Teaser.jpg");
+}
+
+.carousel-container {
+  height: 500px;
+  margin: 20px 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.carousel {
+  position: absolute;
+  transition: all 0.5s;
+}
+
+.carousel-btn {
+  border-radius: 50%;
+  height: 35px;
+  width: 35px;
+  background: white;
+  position: absolute;
+  cursor: pointer;
+}
+
+.carousel-btn:active {
+  transform: scale(1.1);
+}
+
+.btn-prev {
+  top: 45%;
+  left: 5%;
+}
+
+.btn-next {
+  top: 45%;
+  right: 5%;
+}
+
+.dark_black {
+  background-color: #000000 !important;
+}
+
+.medium_black {
+  background-color: #303030 !important;
+}
+
+.navy_black {
+  background-color: #002750 !important;
+}
+
+.footer {
+  background: #000;
+  padding: 15px 0px;
+  font-family: "Play", sans-serif;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer .row {
+  width: 100%;
+  padding: 0.6% 0%;
+  color: gray;
+  font-size: 0.8em;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer .row a {
+  text-decoration: none;
+  color: gray;
+  transition: 0.5s;
+  height: 50px;
+  width: 50px;
+  display: inline;
+}
+
+.footer .row a:hover {
+  color: #fff;
+}
+
+.footer .row ul {
+  width: 100%;
+}
+
+.footer .row ul li {
+  display: inline-block;
+  margin: 0px 30px;
+}
+
+.footer .row a i {
+  font-size: 2em;
+  margin: 0% 1%;
+}
+
+@media (max-width: 720px) {
+  .footer {
+    text-align: left;
+    padding: 5%;
+  }
+  .footer .row ul li {
+    display: block;
+    margin: 10px 0px;
+    text-align: left;
+  }
+  .footer .row a i {
+    margin: 0% 3%;
+  }
 }
