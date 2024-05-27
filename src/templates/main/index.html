@@ -1,0 +1,135 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+{% block title %} Movie Bazaar | Home {% endblock %}
+
+{% block css %}
+
+<style>
+    .movie-container{
+        max-height:250px;
+        width:100%;
+        background-color:black;
+        color:white;
+        overflow-y:scroll;
+        position: absolute;
+        visibility: hidden;
+        z-index:99;
+    }
+
+    .search-box{
+        position:relative;
+    }
+
+    .movie-card{
+        padding:10px 5px;
+        margin: 5px 0px
+    }
+</style>
+
+{% endblock  %}
+
+{% block body %}
+<div id="main-container">
+  {% include "includes/nav.html"%}
+    <div class="container">
+        <div class="main-area">
+            <h1> Unlimited movies, TV shows and more </h1>
+            <h3> Watch anywhere. Cancel anytime. </h3>
+            <p> Search your favorite movie, show, or episode. </p>
+            <div class="search-box">
+                <form id="search_form" method="GET">
+                    <div class="input-group my-3" style="width:650px;">
+                        <input type="search" id="query-input" class="form-control rounded" placeholder="What do you like to watch..." aria-label="Search" aria-describedby="search-addon" required/>
+                        <button type="submit" id="search_btn" class="btn danger" data-mdb-ripple-init>Search</button>
+                    </div>
+                </form>
+
+                <div class="d-flex flex-column p-3 movie-container" id="movie-box">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    {% include "includes/trending.html" %}
+
+    {% include "includes/top_rated_movies.html" %}
+
+    {% include "includes/recently_published.html" %}
+
+    {% include "includes/footer.html" %}
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        
+        const URL = "{% url 'movie-list' %}";
+        const SEARCH_FORM = document.getElementById('search_form');
+        let movieBox = document.getElementById('movie-box');
+
+        const QUERY_INPUT = document.getElementById('query-input');
+
+        QUERY_INPUT.addEventListener('input', () => {
+            movieBox.style.visibility="hidden";
+        });
+
+        function createMovieCard(movie_obj){
+
+            const card = document.createElement("div");
+            card.classList.add('card', 'movie-card', 'text-white', 'bg-dark');
+
+            const cardTitle = document.createElement("h5");
+            cardTitle.classList.add('card-title');
+            cardTitle.innerHTML = movie_obj.title;
+
+            const cardText = document.createElement('p');
+            cardText.classList.add('card-subtitle', 'mb-2', 'text-muted');
+            cardText.innerHTML = movie_obj.description.slice(0,100);
+
+            const cardLink = document.createElement('a');
+            cardLink.innerHTML = 'Watch'
+            cardLink.setAttribute('href', `movies/${movie_obj.slug}/`)
+            cardLink.classList.add('card-link', 'btn', 'btn-primary')
+
+            card.appendChild(cardTitle);
+            card.appendChild(cardText);
+            card.appendChild(cardLink);
+
+            return card;
+        }
+
+        SEARCH_FORM.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            movieBox.innerHTML = '';
+            movieBox.style.visibility="hidden";
+
+            let q = SEARCH_FORM.elements['query-input'].value;
+
+            if (!q){
+                alert('Search query cannot be empty');
+            }
+            else{
+                let url = URL + `?q=${q}`
+                let response = await fetch(url);
+                let data = await response.json();
+                let movies = data['movies'];
+
+                if (movies.length == 0){
+                    movieBox.innerHTML = '<h2 style="color:white;">No result</h2>'
+                }
+
+                else{
+                    for (movie of movies){
+                        movieBox.appendChild(createMovieCard(movie.fields));
+                    }
+                }
+            }
+            movieBox.style.visibility="visible";
+        });
+
+    </script>
+{% endblock js%}

@@ -1,0 +1,355 @@
+{% extends "common/base.html" %}
+{% load static %}
+{% load myfilters %}
+
+{% block css %}
+
+<style>
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+  }
+      .video-container{
+        display: grid;
+        place-items: center;
+        padding: 25px;
+    }
+
+    .master-container{
+        height: 100vh;
+        width: 100%;
+    }
+
+    .video{
+        max-height: 100vh;
+        max-width: 1080px;
+        height: 80vh;
+        box-shadow: rgba(255, 0, 0, 1) 0px 5px 15px;
+    }
+
+    .error__nav {
+      margin: 40px auto 0;
+      text-align: center;
+      width: 100%;
+      height: 50%;
+      max-width: 1080px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: rgba(255, 0, 0, 1) 0px 5px 15px;
+      }
+
+      .e-nav__link {
+          height: 45px;
+          line-height: 45px;
+          width: 170px;
+          display: inline-block;
+          vertical-align: top;
+          margin: 0 15px;
+          border: 1px solid #181828;
+          color: #181828;
+          text-decoration: none;
+          font-family: 'Montserrat', sans-serif;
+          text-transform: uppercase;
+          font-size: 11px;
+          letter-spacing: .1rem;
+          background-color: #e50914;
+          position: relative;
+          overflow: hidden;
+          }
+  
+          .e-nav__link:before {
+          content: '';
+          height: 200px;
+          background: #212121;
+          position: absolute;
+          top: 70px;
+          right: 70px;
+          width: 260px;
+          -webkit-transition: all .3s;
+          transition: all .3s;
+          -webkit-transform: rotate(50deg);
+                  transform: rotate(50deg);
+          }
+  
+          .e-nav__link:after {
+          -webkit-transition: all .3s;
+          transition: all .3s;
+          z-index: 999;
+          position: relative;
+          }
+  
+          .e-nav__link:after {
+          content: "Subscribe to Watch";
+          }
+  
+          .e-nav__link:hover:before {
+          top: -60px;
+          right: -50px;
+          }
+  
+          .e-nav__link:hover {
+          color: #fff;
+          }
+  
+          .e-nav__link:nth-child(2):hover:after {
+            color: #fff;
+            }
+
+          #comment-box{
+            height: 150px;
+            overflow-y: scroll;
+            background-color: #212121 !important;
+          }
+
+          .list-group-item{
+            background-color: black;
+            color: white;
+            margin-top: 5px;
+          }
+
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          #comment-box::-webkit-scrollbar {
+              display: none;
+          }
+
+          /* Hide scrollbar for IE, Edge and Firefox */
+          #comment-box {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+          }
+</style>
+
+{% endblock css %}
+
+{% block body %}
+
+{% include "includes/nav.html" %}
+
+<div class="container">
+
+  <h1>{{movie.title}}</h1>
+
+  <div class="row bg-dark p-3">
+    <div class="col-3">
+      <div style="height: 300px; width:100%;">
+        <img src="{{movie.image_card.url}}" alt="{{movie.title}}" style="height:100%; width:100%; object-fit:cover">
+      </div>
+    </div>
+
+    <div class="col-9" style="position:relative">
+      <form method="POST" action="{% url 'add-to-wishlist' movie.slug %}" id="wishlist-form" style="position: absolute; right: 10px;">{% csrf_token %}
+        {% if not in_wishlist %}
+        <button class="btn btn-outline-danger" type="submit" style="padding: 4px 10px;">Add to wishlist <i class="fa fa-plus"></i></button>
+        {% else %}
+        <button class="btn btn-outline-danger" type="submit" style="padding: 4px 10px;">Remove from wishlist <i class="fa-solid fa-xmark"></i></i></button>
+        {% endif %}
+      </form>
+
+      <p><small class="muted">Directed By: </small>{{movie.director}}</p>
+      <p><small class="muted">Release Date: </small>{{movie.release_date}}</p>
+      <p><small class="muted">Genre: </small>{{movie.get_genre_display}}</p>
+      <p><small class="muted">Views: </small>{{movie.views}}</p>
+      <p><small class="muted">Ratings: </small>{{movie.ratings}}</p>
+      <details style="margin: 15px 0;">
+        <summary>Description</summary>
+        <p>{{movie.description}}</p>
+      </details>
+    </div>
+  </div>
+</div>
+
+
+<div class="container movie-info-container">
+  <div class="row master-container p-3">
+    <div class="col-12 video-container">
+        {% if not movie.is_paid or user.is_premium_user %}
+        <video class="video" id="video1" controls>
+            <source src="{{movie.video.url}}" type="video/mp4">
+            Your browser does not support HTML video.
+        </video>
+        {% else  %}
+        <div class="error__nav e-nav">
+          <a href="{% url 'subscriptions' %}" class="e-nav__link"></a>
+        </div>
+        {% endif %}
+    </div>
+  </div>
+
+  <div class="container" style="width: 80%;">
+
+    <div class="d-flex flex-row align-items-center" style="margin: 1rem 0.375rem;">
+      
+      <form id="likeDislikeForm"> {% csrf_token %}
+          <div id="likeDislikeButton" style="place-content: center;">
+              {% if has_liked == True %}
+              <button type="submit" class="btn btn-danger m-0"><i class="fa-solid fa-heart"></i></button>
+              {% else %}
+              <button type="submit" class="btn btn-outline-danger m-0"><i class="fa-regular fa-heart"></i></button>
+              {% endif %}
+          </div>
+      </form>
+
+      <p id="likeCount" style="margin:0 5px;">{{movie.like_counts}} Likes</p>
+    </div>
+
+    <p class="my-2" style="font-size: 20px;">Comments:</p>
+
+    <div id="comment-box" class="mb-2">
+      
+
+      
+      <ul class="list-group list-group-flush mx-2 rounded" id="comment-list">
+        {% for comment in comments %}
+        <li class="list-group-item my-1"> <strong>{{comment.user.username}}:</strong> {{comment.value}}</li>
+        {% endfor %}
+      </ul>
+
+      {% if not comments %}
+      <h4 class="mt-3" style="text-align: center;" id="no-comment">No comments Yet!.</h4>
+      {% endif %}
+    </div>
+
+    <form class="input-group mb-3" id="post-comment-form">
+      <input type="text" class="form-control" name="comment" placeholder="Your Comment..." aria-describedby="basic-addon2" required>
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" style="margin: 0 !important;" type="submit">Add Comment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% include "includes/trending.html" %}
+
+{% include "includes/top_rated_movies.html" %}
+
+{% include "includes/recently_published.html" %}
+
+{% include "includes/footer.html" %}
+
+{% endblock body %}
+
+
+{% block js %}
+
+<script>
+
+  document.getElementById('wishlist-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    let URL = "{% url 'add-to-wishlist' movie.slug %}"
+    let form = e.target;
+
+    try{
+        let response = await fetch(URL, {
+        method:'POST',
+        headers:{
+          'X-CSRFToken':"{{csrf_token}}"
+        },
+      })
+
+      if (!response.ok){
+        throw new Error('Server responsed with an error!');
+      }
+
+      let response_data = await response.json();
+
+      if (!response_data.data['in_wishlist']){
+        form.innerHTML = `<button class="btn btn-outline-danger" type="submit" style="padding: 4px 10px;">Add to wishlist <i class="fa fa-plus"></i></button>`
+      }
+      else{
+        form.innerHTML = `<button class="btn btn-outline-danger" type="submit" style="padding: 4px 10px;">Remove from wishlist <i class="fa-solid fa-xmark"></i></i></button>`
+      }
+    }
+    catch (error){
+      alert(error);
+    }
+    
+  });
+
+  document.getElementById('post-comment-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      let URL = "{% url 'add-comment-to-movie' movie.slug %}";
+      let form = e.target;
+      let formData = new FormData(form);
+      let commentList = document.getElementById('comment-list');
+      let noComment = document.getElementById('no-comment');
+
+      try{
+        let response = await fetch(URL, {
+          method:'POST',
+          body:formData,
+          headers:{
+            'X-CSRFToken':'{{csrf_token}}'
+          }
+        });
+
+        if (!response.ok){
+          throw new Error("Network responsed with an error.")
+        }
+        
+
+        let response_data = await response.json();
+
+        let data = response_data.data;
+        let user = data.user;
+
+        let comment = data.comment.fields.value;
+        let liHTML = `<li class="list-group-item"> <strong>${user}:</strong> ${comment}</li>`;         
+        let li = document.createElement('li');
+        li.innerHTML = liHTML;
+        noComment.style.display = 'none';
+        commentList.insertBefore(li, commentList.children[0]);
+
+      }
+      catch (error){
+        alert(error);
+      }
+  });
+
+  document.getElementById('likeDislikeForm').addEventListener('submit', async (e) => {
+
+    e.preventDefault();
+
+    const alertBox = document.getElementById('alert-box');
+    const message = document.getElementById('message'); 
+    let URL = "{% url 'movie-like-dislike' movie.slug %}";
+
+    let form = e.target;
+    let p = document.getElementById('likeCount');
+
+    try {
+      let response = await fetch(URL, {
+        method: 'POST',
+        headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('An unknown error occured. Network responded with an error.');
+        }
+        
+        let response_data = await response.json();
+
+        let has_liked = response_data.data.has_liked;
+        let like_counts = response_data.data.like_counts;
+
+        if (has_liked==true){
+          form.innerHTML = '<button type="submit" class="btn btn-danger m-0"><i class="fa-solid fa-heart"></i></button>'
+        }
+        else{
+          form.innerHTML = '<button type="submit" class="btn btn-outline-danger m-0"><i class="fa-regular fa-heart"></i></button>'
+        }
+
+        p.innerText = `${like_counts} Likes`;
+
+        } catch (error) {
+          alert(error);
+        }
+    });
+</script>
+
+{% endblock js %}

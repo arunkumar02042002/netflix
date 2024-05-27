@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Bazaar</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body{
+            background-color: #b7b7b7;
+        }
+
+        .container{
+            background-color: #b7b7b7;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .message-box {
+            background-color: inherit;
+        }
+        ._failed{ border-bottom: solid 4px red !important; }
+        ._failed i{  color:red !important;  }
+
+        ._success {
+            box-shadow: 0 15px 25px #00000019;
+            padding: 45px;
+            width: 100%;
+            text-align: center;
+            margin: 40px auto;
+            border-bottom: solid 4px #28a745;
+        }
+
+        ._success i {
+            font-size: 55px;
+            color: #28a745;
+        }
+
+        ._success h2 {
+            margin-bottom: 12px;
+            font-size: 40px;
+            font-weight: 500;
+            line-height: 1.2;
+            margin-top: 10px;
+        }
+
+        ._success p {
+            margin-bottom: 0px;
+            font-size: 18px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+.error__nav {
+        max-width: 600px;
+        margin: 40px auto 0;
+        text-align: center;
+        }
+
+        .e-nav__link {
+            height: 45px;
+            line-height: 45px;
+            width: 170px;
+            display: inline-block;
+            vertical-align: top;
+            margin: 0 15px;
+            border: 1px solid #181828;
+            color: #181828;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: .1rem;
+            position: relative;
+            overflow: hidden;
+            }
+    
+            .e-nav__link:before {
+            content: '';
+            height: 200px;
+            background: #212121;
+            position: absolute;
+            top: 70px;
+            right: 70px;
+            width: 260px;
+            -webkit-transition: all .3s;
+            transition: all .3s;
+            -webkit-transform: rotate(50deg);
+                    transform: rotate(50deg);
+            }
+    
+            .e-nav__link:after {
+            -webkit-transition: all .3s;
+            transition: all .3s;
+            z-index: 999;
+            position: relative;
+            }
+    
+            .e-nav__link:after {
+            content: "Try Again";
+            }
+    
+            .e-nav__link:hover:before {
+            top: -60px;
+            right: -50px;
+            }
+    
+            .e-nav__link:hover {
+            color: #fff;
+            }
+    
+            .e-nav__link:nth-child(2):hover:after {
+            color: #fff;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="container row justify-content-center">
+        <div class="col-md-5" style="max-width: 500px; background-color: white;">
+            <div class="message-box _success _failed">
+                 <i class="fa fa-times-circle" aria-hidden="true"></i>
+                <h2> Your payment failed.</h2>
+                <p> Try again later </p>
+
+                <p><small>Your money will be refuned to you bank account within 7 working days.</small></p>
+
+                <div class="error__nav e-nav">
+                    <a href="{% url 'subscriptions' %}" class="e-nav__link"></a>
+                </div>
+        </div> 
+        
+    </div> 
+</div> 
+
+</div> 
+</body>
+</html>

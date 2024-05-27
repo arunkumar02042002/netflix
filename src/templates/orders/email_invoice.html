@@ -1,0 +1,12 @@
+{% autoescape off %}
+Hi {{ user.email }},
+Your order with order id: {{order.order_id}} has been placed successfully.
+
+You have subscribed to our platform for - {{order.subscription_plan.months}} months.
+And You subscription plan will end. {{user.plan.expiry_date}}
+
+Thanks for trusting us and using our services!
+
+Sincerely,
+Movie Bazaar Team
+{% endautoescape %}

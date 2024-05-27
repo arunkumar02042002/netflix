@@ -1,0 +1,160 @@
+{% extends "common/base.html" %}
+{% load static %}
+{% load myfilters %}
+
+{% block css %}
+
+<style>
+
+	.custom-input-group{
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: stretch;
+		margin: 0 15px;
+	}
+
+</style>
+
+{% endblock css %}
+
+{% block body %}
+
+{% include "includes/nav.html" %}
+
+<div class="container d-flex">
+	<form action="{% url 'movies' %}" id="search_form" method="GET" style="width: 100%;">
+		<div class="input-group my-3" style="width: 100%;">
+			<input type="search" id="query-input" name="q" class="form-control rounded" placeholder="What do you like to watch..." aria-label="Search" aria-describedby="search-addon" required/>
+			<button type="submit" id="search_btn" class="btn danger" data-mdb-ripple-init>Search</button>
+		</div>
+	</form>
+</div>
+	
+<div class="container d-flex justify-content-end mb-5">
+	<div class="custom-input-group">
+		<div class="input-group-prepend">
+			<label class="input-group-text" for="genre">GENRE</label>
+		</div>
+		<select class="custom-select" id="genre" onchange="location=getGenreUrl()">
+			<option selected>Choose...</option>
+			<option value="ACTION">Action</option>
+			<option value="COMEDY">Comedy</option>
+			<option value="DRAMA">Drama</option>
+			<option value="HORROR">Horror</option>
+			<option value="ROMANCE">Romance</option>
+			<option value="SCIENCE_FICTION">Science Fiction</option>
+			<option value="FANTASY">Fantasy</option>
+		</select>
+	</div>
+	<div class="custom-input-group">
+		<div class="input-group-prepend">
+			<label class="input-group-text" for="ordering">Ordering</label>
+		</div>
+		<select class="custom-select" id="ordering" onchange="location = getOrderingUrl();">
+			<option selected>Choose...</option>
+			<option value="-ratings">Ratings</option>
+			<option value="-views">Views</option>
+		</select>
+	</div>
+</div>
+
+<div class="d-flex justify-content-center flex-wrap gap-3 m-3" style="min-height: 30vh;">
+	{% if not movies %}
+	<div>
+		<h2>No Result</h2>
+	</div>
+	{% else %}
+		{% for movie in movies %}
+		<div class="card bg-dark" style="max-width: 25rem;">
+			{% if movie.is_paid %}
+			<div class="paid-logo"><i class="fa-solid fa-dollar-sign"></i></div>
+			{% else %}
+			<div class="paid-logo">Free</i></div>
+			{% endif %}
+			<div class="text-white bg-dark mb-3">
+				<img class="card-img-top" src="{{movie.image_card.url}}" alt="{{movie.title}}" style="height:300px; width:100%;">
+				<div class="card-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="card-title">{{movie.title}}</h5>
+					<p>{{movie.ratings}} <i class="fa fa-star"></i></p>
+				</div>
+				<p class="card-text"> <small class="text-muted">GENRE: </small><small>{{movie.get_genre_display}}</small></p>
+				<p class="card-text"> <small class="text-muted">Views: </small><small>{{movie.views}}</small></p>
+				<p class="card-text"> <small class="text-muted">Release Date: </small><small>{{movie.release_date}}</small></p>
+				<p class="card-text"> <small class="text-muted">Director: </small><small>{{movie.director}}</small></p>
+				<p class="card-text">{{movie.description|slice:":125"}}...</p>
+				</div>
+			</div>
+
+			{% if movie.is_paid and not user.is_premium_user %}
+			<a href="{% url 'subscriptions' %}" class="btn btn-warning">Subscribe</a>
+			{% else %}
+			<a href="{{movie.get_absolute_url}}" class="btn btn-primary">Watch</a>
+			{% endif %}
+			
+		</div>
+		{% endfor %}
+	{% endif %}
+  </div>
+
+  <div class='d-flex justify-content-center align-items-center gap-2 my-5'>
+	<ul class="pagination">
+		{% if page_obj.has_previous %}
+		<li class="page-item mx-2">
+			<a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="btn btn-outline-primary">Previous</a>
+		</li>
+		{% else %}
+		<li class="page-item disabled mx-2">
+			<a class="page-link" href="#" tabindex="-1">Previous</a>
+		</li>
+		{% endif %}
+
+		<li class="page-item active mx-2">
+			<a href="?page={{ page_obj.number }}&{{ query_params }}" class="btn btn-outline-primary">{{ page_obj.number }}</a>
+		</li>
+
+		{% if page_obj.has_next %}
+		<li class="page-item mx-2">
+			<a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="btn btn-outline-primary">Next</a>
+		</li>
+		{% else %}
+		<li class="page-item disabled mx-2">
+			<a class="page-link" href="#">Next</a>
+		</li>
+		{% endif %}
+	</ul>
+  </div>
+
+  {% include "includes/footer.html" %}
+
+{% endblock body %}
+
+{% block js %}
+
+  <script>
+
+	function getOrderingUrl(){
+		let url = new URL(window.location.href);
+		let search_params = url.searchParams;
+		let ordering = document.getElementById('ordering')
+		search_params.set('ordering', ordering.value)
+		url.search = search_params.toString();
+		let new_url = url.toString();
+		return new_url;
+	}
+
+	function getGenreUrl(){
+		let url = new URL(window.location.href);
+		let search_params = url.searchParams;
+		let genre = document.getElementById('genre')
+		search_params.set('genre', genre.value)
+		search_params.set('page', 1)
+		url.search = search_params.toString();
+		let new_url = url.toString();
+		return new_url;
+	}
+
+  </script>
+
+{% endblock js%}

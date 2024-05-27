@@ -1,0 +1,46 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-light" style="justify-content: space-between; width: 100%; box-shadow: rgba(50, 50, 93, 1) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.5) 0px 18px 36px -18px inset;">
+    <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'images/logo1.png' %}" alt= "Movie Bazaar" style="height:50px;">
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="dropdown mr-3">
+      <button class="btn dropdown-toggle dropdownMenuButton" type="button"
+          id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false" style="background: #e50914; color:white;">
+          Account
+      </button>
+      <ul class="dropdown-menu dropdown-menu-left dropdown-menu-lg-right"
+          aria-labelledby="dropdownMenuButton">
+
+          <li class="mt-2"><a class="dropdown-item btn btn-outline-secondary" href="{% url 'profile' %}">Profile</a></li>
+          <li class="mt-2"><a class="dropdown-item btn btn-outline-secondary" href="{% url 'movies' %}">All Movies</a></li>
+          <hr>
+
+          {% if user.is_authenticated %}
+          <li class="mt-2">
+            {% if not user.is_premium_user %}
+            <a class="dropdown-item btn btn-outline-secondary" href="{% url 'subscriptions' %}">Go Premium</a>
+            {% endif %}
+          </li>
+          <li class="mt-2">
+              <form action="{% url 'logout' %}" method="POST" class="dropdown-item"> {% csrf_token %}
+                  <input type="submit" value="Logout now" style="text-decoration: none; border:none; background:white"/>
+              </form>
+          </li>
+          <hr>
+          <li class="mt-2"><a class="dropdown-item btn btn-outline-secondary" href="{% url 'password_change' %}">Change Password</a></li>
+
+          {% else %}
+          <li class="mt-2"><a class="dropdown-item btn btn-outline-secondary" href="{% url 'login' %}">Login</a></li>
+          <li class="mt-2"><a class="dropdown-item btn btn-outline-secondary" href="{% url 'signup' %}">Singup</a></li>
+
+          {% endif %}
+
+      </ul>
+    </div>
+</nav>

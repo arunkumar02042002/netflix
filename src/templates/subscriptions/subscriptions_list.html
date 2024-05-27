@@ -1,0 +1,95 @@
+{% extends "common/base.html" %}
+{% load static %}
+{% load myfilters %}
+
+{% block css %}
+
+<style>
+    .subscription-card {
+        width: 300px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction:column;
+        align-items: center;
+        color: black;
+    }
+
+    .subscription-container{
+        min-height: 370px;
+    }
+    
+    .logo {
+        width: 100%;
+        height: 30px;
+    }
+    
+    .subscription-details {
+        margin-bottom: 15px;
+    }
+    
+    .subscribe-button {
+        background-color: #ff0000;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    .subscribe-button:hover {
+        background-color: #cc0000;
+    }
+</style>
+
+{% endblock css %}
+
+{% block body %}
+
+{% include "includes/nav.html" %}
+
+<div class="d-flex justify-content-center flex-wrap gap-5 m-5 subscription-container">
+    {% for subscription in subscriptions %}    
+    <div class="subscription-card">
+        <div class="d-flex justify-content-center mb-3 align-items-center medium_black" style="width:100%; height:50px;">
+            <img src="{% static 'images/logo1.png' %}" alt="Movie Bazaar" class="logo">
+        </div>
+        <div class="subscription-details">
+          <h2 class="m-3">{{subscription.title}}</h2>
+          <p class="m-3">Get access to ad-free videos, and exclusive content with our subscription plan.</p>
+          <p><strong style="color:red">Price: <i class="fa-solid fa-indian-rupee-sign"></i> {{subscription.amount}}</strong></p>
+        </div>
+        <form action="{% url 'buy-subscription' %}" method="POST">{% csrf_token %}
+            <input type="hidden" name="subscription_uuid" value="{{ subscription.uuid }}">
+            <button type="submit" class="subscribe-button">Subscribe Now</button>
+        </form>
+    </div>
+    {% endfor %}
+  </div>
+
+  <hr style="height: 1px;
+  margin: 40px 0px !important;">
+
+  <div class="d-flex flex-column justify-content-center align-items-center mt-5 mb-5">
+
+    <p>You can avail one month of free subscription!</p>
+
+    <form action="{% url 'free-subscription' %}" method="POST">{% csrf_token %}
+        <button type="submit" class="subscribe-button">Request Free Subscription</button>
+    </form>
+  </div>
+
+  {% include "includes/footer.html" %}
+
+{% endblock body %}
+
+
+
+{% block js %}
+
+{% endblock js%}

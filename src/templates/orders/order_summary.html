@@ -1,0 +1,82 @@
+{% extends "common/base.html" %}
+{% load static %}
+{% load myfilters %}
+
+{% block css %}
+
+<style>
+    .subscription-container{
+        min-height: 370px;
+    }
+
+    th{
+        padding: 2rem;
+    }
+
+    td{
+        padding: 2rem;
+    }
+</style>
+
+{% endblock css %}
+
+{% block body %}
+
+{% include "includes/nav.html" %}
+
+<div class="d-flex flex-column justify-content-center align-items-center flex-wrap gap-5 m-3 subscription-container">
+    <table class="table bg-dark text-white" style="width:1020px;">
+        <tbody class="p-4">
+            <tr>
+                <th scope="col" colspan="2" style="text-align:center"><h2>Order Summary</h2></th>
+            </tr>
+          <tr>
+            <th scope="row">Order Id:</th>
+            <td>{{order.order_id}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Amount:</th>
+            <td><i class="fa-solid fa-indian-rupee-sign"></i> {{order.total_amount}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Plan</th>
+            <td>{{order.subscription_plan.title}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Validity:</th>
+            <td>{{order.subscription_plan.months}} months from the date of purchase.</td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="rzp-button1" class='btn btn-primary' style="width:1020px">Pay Now</button>
+  </div>
+
+  {% include "includes/footer.html" %}
+
+{% endblock body %}
+
+{% block js %}
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "{{razorpay_key_id}}",
+    "amount": "{{amount}}",
+    "currency": "INR",
+    "name": "Movie Bazaar",
+    "description": "Test Transaction",
+    "image": "{% static 'images/logo1.png' %}",
+    "order_id": "{{order.razorpay_order_id}}",
+    "callback_url": "{{callback_url}}",
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+</script>
+
+{% endblock js%}
