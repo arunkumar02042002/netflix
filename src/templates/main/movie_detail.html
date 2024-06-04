@@ -300,7 +300,7 @@
         let liHTML = `<li class="list-group-item"> <strong>${user}:</strong> ${comment}</li>`;         
         let li = document.createElement('li');
         li.innerHTML = liHTML;
-        noComment.style.display = 'none';
+        if (noComment) noComment.style.display = 'none';
         commentList.insertBefore(li, commentList.children[0]);
 
       }
