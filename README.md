@@ -6,6 +6,8 @@ The Movie APP is a comprehensive web application that allows users to browse, co
 
 ## Walk Through Video
 
+<a href="https://drive.google.com/file/d/1BpdY0McRXUHUz9xVTTynYDk9RDNFVd1n/view?usp=sharing" target="_blank">Video</a>
+
 
 ## Features
 
